@@ -1,0 +1,48 @@
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="row">
+    <div class="col-xl">
+        <div class="card">
+            <div class="card-header">
+                Добро пожаловать в личный кабинет
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Личный кабинет</h5>
+                <p class="card-text">Это Ваш личный кабинет. В нем вы можете добовлять и удалять организации. Редактировать и добавлять информацию о себе.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                @*@Html.Action("About", "Home")*@
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                @(Html.DevExtreme().DataGrid<Core.Organizations>()
+                .DataSource(d => d.Mvc().Controller("Organizations")
+                .Key("Id")
+                .LoadAction("Get")
+                .UpdateAction("Update")
+                .InsertAction("Insert")
+                .DeleteAction("Delete")
+                ).Columns(c =>
+                {
+                    c.AddFor(o => o.Title).Caption("Название");
+                    c.AddFor(o => o.Description).Caption("Описание");
+                })
+                .Editing(e => e.AllowAdding(true).AllowUpdating(true))
+                .OnRowClick("function(e) { window.location.href = '"+ Url.Action("Products","Organizations",null, Request.Url.Scheme) +"/' + e.key; }")
+                )
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,33 @@
+﻿@using Core;
+@model Clients
+@{
+    ViewBag.Title = "SignUpPage";
+}
+
+<div class="row align-items-center h-100">
+    <div class="col align-self-center">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Authorization</h5>
+                @using (Html.BeginForm())
+                {
+                    <div class="form-group">
+                        <label for="Email">Email address</label>
+                        <input type="email" class="form-control" id="Email" name="Email" aria-describedby="emailHelp" placeholder="Enter email" />
+                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="Pass">Password</label>
+                        <input type="password" class="form-control" id="Pass" name="Pass" placeholder="Password" />
+                    </div>
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="exampleCheck1" />
+                        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                    </div>
+                    <button type="button" class="btn btn-success">SignUp</button>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
