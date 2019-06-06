@@ -25,7 +25,7 @@ namespace Core
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public System.Guid Id { get; set; }
-        public System.Guid OrganizationId { get; set; }
+        public System.Guid? OrganizationId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string Photo { get; set; }

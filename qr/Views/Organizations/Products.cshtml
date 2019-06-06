@@ -3,22 +3,116 @@
     ViewBag.Title = "Index";
 }
 
-@(Html.DevExtreme().DataGrid<Core.Products>()
-                            .DataSource(d => d.Mvc().Controller("Products")
-                            .Key(new string[] { "id", "OrganizationId" })
-                            .LoadAction("Get")
-                            .UpdateAction("Update")
-                            .InsertAction("Insert")
-                            .DeleteAction("Delete")
-                            .LoadParams(new { organizationId = Model.ToString() })
-                            ).Columns(c =>
-                            {
-                                c.AddFor(o => o.Title).Caption("Название");
-                                c.AddFor(o => o.Description).Caption("Описание");
-                                c.AddFor(o => o.Price).Caption("Цена");
-                                c.AddFor(o => o.OrganizationId).Visible(false);
-                            })
-                            .Editing(e => e.AllowAdding(true).AllowUpdating(true))
-                            .OnRowInserting(@<text> function(e) { e.data.OrganizationId = "@Model.ToString()"; } </text>)
-)
+<div class="row">
+<div class="col-xl">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Управление товарами</h5>
+            <p class="card-text">На этой странице вы можете редактировать товары и группы товаров</p>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                @(Html.DevExtreme().DataGrid<Core.ProductGroups>()
+                                        .DataSource(d => d.Mvc().Controller("ProductGroups")
+                                        .Key(new string[] { "Id" })
+                                        .LoadAction("Get")
+                                        .UpdateAction("Update")
+                                        .InsertAction("Insert")
+                                        .DeleteAction("Delete")
+                                        .LoadParams(new { organizationId = Model.ToString() })
+                                        ).Columns(c =>
+                                        {
+                                            c.AddFor(o => o.Title).Caption("Название");
+                                            c.AddFor(o => o.Description).Caption("Описание");
+                                            c.AddFor(o => o.OrganizationId).Visible(false);
+                                        })
+                                        .Editing(e => e.AllowAdding(true).AllowUpdating(true))
+                                        .OnRowInserting(@<text> function(e) { e.data.OrganizationId = "@Model.ToString()"; } </text>)
+                                    .MasterDetail(md =>
+                                    {
+                                        md.Enabled(true);
+                                        md.Template(
+                                        @<text>
+                                            @(Html.DevExtreme().DataGrid<Core.Products>()
+                                                        .DataSource(d => d.Mvc().Controller("Products")
+                                                        .Key(new string[] { "id", "GroupId" })
+                                                        .LoadAction("GetForGroup")
+                                                        .UpdateAction("Update")
+                                                        .InsertAction("Insert")
+                                                        .DeleteAction("Delete")
+                                                        .LoadParams(new { GroupId = new JS("data.Id") })
+                                                        ).Columns(c =>
+                                                        {
+                                                            c.AddFor(o => o.Title).Caption("Название");
+                                                            c.AddFor(o => o.Description).Caption("Описание");
+                                                            c.AddFor(o => o.Price).Caption("Цена");
+                                                            c.AddFor(o => o.OrganizationId).Visible(false);
+                                                        })
+                                                        .Editing(e => e.AllowAdding(true).AllowUpdating(true))
+                                                        .OnInitNewRow(string.Format("function(e) {{ onInitNewRow(e, {0}); }}", new JS("data.Id")))
+                                            )
+                                        </text>
+                                    );
+                                })
+
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                @(Html.DevExtreme().DataGrid<Core.Products>()
+                                                     .DataSource(d => d.Mvc().Controller("Products")
+                                                     .Key(new string[] { "id", "OrganizationId" })
+                                                     .LoadAction("Get")
+                                                     .UpdateAction("Update")
+                                                     .InsertAction("Insert")
+                                                     .DeleteAction("Delete")
+                                                     .LoadParams(new { organizationId = Model.ToString() })
+                                                     ).Columns(c =>
+                                                     {
+                                                         c.AddFor(o => o.Title).Caption("Название");
+                                                         c.AddFor(o => o.Description).Caption("Описание");
+                                                         c.AddFor(o => o.Price).Caption("Цена");
+                                                         c.AddFor(o => o.GroupId).Lookup(l =>
+                                                            l.DataSource(d => d.Mvc().Controller("ProductGroups")
+                                                            .Key("Id")
+                                                            .LoadAction("Get")
+                                                            .LoadParams(new { organizationId = Model.ToString() })
+                                                            ).DisplayExpr("Title").ValueExpr("Id")).CustomizeText(
+                                                            @<text> function(e) { if(!e.value){
+                                                                                    return "Нет группы"
+                                                                                  } else {
+                                                                                        return e.value 
+                                                                                    }
+                                                                    } 
+                                                            </text>
+                                                        );
+                                                })
+                                                .Editing(e =>
+                                                {
+                                                    e.Mode(GridEditMode.Form);
+                                                    e.AllowAdding(true).AllowUpdating(true);
+                                                })
+                                                .OnRowInserting(@<text> function(e) { e.data.OrganizationId = "@Model.ToString()"; } </text>)
+                )
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function onInitNewRow(e, parentID) {
+    e.data.GroupId = parentID;
+    }
+</script>
+
+
 

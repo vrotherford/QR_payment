@@ -26,6 +26,15 @@ namespace qr.Controllers
             return Content(resultJson, "application/json");
         }
 
+        public ActionResult GetForGroup(DataSourceLoadOptions loadOptions)
+        {
+            var queryParams = Request.QueryString;
+            var id = queryParams["GroupId"];
+            var result = DataSourceLoader.Load(db.products.Where(p => p.GroupId.ToString() == id), loadOptions);
+            var resultJson = JsonConvert.SerializeObject(result);
+            return Content(resultJson, "application/json");
+        }
+
         public ActionResult Insert(string values)
         {
             var newProduct= new Products();                             // Create a new item
