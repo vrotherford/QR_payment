@@ -12,10 +12,12 @@ namespace qr.Controllers
     {
 
         [HttpPost]
-        public void SendPayment(string amount, string merchant_id)
+        public ActionResult SendPayment(string amount, string merchant_id)
         {
             var response = PaymentService.sendPaymentRequstAsync(amount, merchant_id, ConfigurationManager.AppSettings["paymentRequstUrl"]);
-            string a = String.Empty;
+            string real = System.Web.HttpUtility.UrlDecode(response);
+            string checkout_url = HttpUtility.ParseQueryString(real).Get("checkout_url");
+            return Redirect(checkout_url);
         }
         
         // GET: Payment

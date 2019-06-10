@@ -13,15 +13,16 @@ namespace Services
 {
     public class PaymentService
     {
-        //private static HttpClient client = new HttpClient();
+        private static HttpClient client = new HttpClient();
 
         public static string sendPaymentRequstAsync(string amount, string merchant_id, string url)
         {
-            //client.Timeout = TimeSpan.FromMinutes(1);
-            string signature = generateSignature(amount, merchant_id, "test payment", "test1");
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+            string order_id = String.Format("test_{0}", Guid.NewGuid().ToString());
+            string signature = generateSignature(amount, merchant_id, "test payment", order_id);
             var values = new Dictionary<string, string>
             {
-                { "order_id", "test1" },
+                { "order_id", order_id },
                 { "order_desc", "test payment" },
                 {"currency", "RUB" },
                 {"amount", amount },
@@ -29,33 +30,9 @@ namespace Services
                 {"merchant_id", merchant_id }
             };
 
-            var request = (HttpWebRequest)WebRequest.Create(new Uri(url));
-            request.ContentType = "application/json";
-            request.Method = "POST";
-            request.Timeout = 4000; //ms
-            var itemToSend = JsonConvert.SerializeObject(values);
-            using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-            {
-                streamWriter.Write(itemToSend);
-                streamWriter.Flush();
-                streamWriter.Dispose();
-            }
-
-            // Send the request to the server and wait for the response:  
-            using (var response = request.GetResponse())
-            {
-                // Get a stream representation of the HTTP web response:  
-                using (var stream = response.GetResponseStream())
-                {
-                    var reader = new StreamReader(stream);
-                    var message = reader.ReadToEnd();
-                    return message;
-                }
-            }
-
-            //var content = new FormUrlEncodedContent(values);
-            //var response = client.PostAsync(url, content).Result;
-            //return await response.Content.ReadAsStringAsync();
+            var content = new FormUrlEncodedContent(values);
+            var response = client.PostAsync(url, content).Result;
+            return response.Content.ReadAsStringAsync().Result;
         }
 
         private static string generateSignature(string amount, string merchant_id, string order_desc, string order_id)
