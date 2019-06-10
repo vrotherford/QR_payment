@@ -15,8 +15,11 @@
 </div>
 
 <div class="row" style="margin-top: 20px;">
-    <div class="col-sm-6">
+    <div class="col-xl">
         <div class="card">
+            <div class="card-header">
+                Группы товаров
+            </div>
             <div class="card-body">
                 @(Html.DevExtreme().DataGrid<Core.ProductGroups>()
                                         .DataSource(d => d.Mvc().Controller("ProductGroups")
@@ -65,43 +68,71 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-6">
+    
+</div>
+<div class="row" style="margin-top: 20px;">
+    <div class="col-xl">
         <div class="card">
+            <div class="card-header">
+                Товары
+            </div>
             <div class="card-body">
                 @(Html.DevExtreme().DataGrid<Core.Products>()
-                                                     .DataSource(d => d.Mvc().Controller("Products")
-                                                     .Key(new string[] { "id", "OrganizationId" })
-                                                     .LoadAction("Get")
-                                                     .UpdateAction("Update")
-                                                     .InsertAction("Insert")
-                                                     .DeleteAction("Delete")
-                                                     .LoadParams(new { organizationId = Model.ToString() })
-                                                     ).Columns(c =>
-                                                     {
-                                                         c.AddFor(o => o.Title).Caption("Название");
-                                                         c.AddFor(o => o.Description).Caption("Описание");
-                                                         c.AddFor(o => o.Price).Caption("Цена");
-                                                         c.AddFor(o => o.GroupId).Lookup(l =>
-                                                            l.DataSource(d => d.Mvc().Controller("ProductGroups")
-                                                            .Key("Id")
-                                                            .LoadAction("Get")
-                                                            .LoadParams(new { organizationId = Model.ToString() })
-                                                            ).DisplayExpr("Title").ValueExpr("Id")).CustomizeText(
-                                                            @<text> function(e) { if(!e.value){
-                                                                                    return "Нет группы"
-                                                                                  } else {
-                                                                                        return e.value 
-                                                                                    }
-                                                                    } 
-                                                            </text>
-                                                        );
-                                                })
-                                                .Editing(e =>
-                                                {
-                                                    e.Mode(GridEditMode.Form);
-                                                    e.AllowAdding(true).AllowUpdating(true);
-                                                })
-                                                .OnRowInserting(@<text> function(e) { e.data.OrganizationId = "@Model.ToString()"; } </text>)
+                            .DataSource(d => d.Mvc().Controller("Products")
+                            .Key(new string[] { "id", "OrganizationId" })
+                            .LoadAction("Get")
+                            .UpdateAction("Update")
+                            .InsertAction("Insert")
+                            .DeleteAction("Delete")
+                            .LoadParams(new { organizationId = Model.ToString() })
+                            ).Columns(c =>
+                            {
+                                c.AddFor(o => o.Photo).AllowSorting(false).AllowGrouping(false).Caption("Фотография")
+                                .CellTemplate(@<text>
+                                    <div>
+                                        <img src="<%= value %>" alt="" style="height: 100px; display: block;"/>
+                                    </div>
+                                </text>)
+                            .EditCellTemplate(
+                            @<text>
+                                @(Html.DevExtreme().FileUploader()
+                                                    .ID("file-uploader")
+                                                    .ElementAttr(new JS("{'data-id': data.id }"))
+                                                    .Name("myFile")
+                                                    .Multiple(false)
+                                                    .Accept("*")
+                                                    .UploadMode(FileUploadMode.Instantly)
+                                                    .UploadUrl(Url.Action("Upload", "FileUploader"))
+                                                    .OnValueChanged("fileUploader_valueChanged")
+                                )
+                            </text>
+                            );
+
+                                c.AddFor(o => o.Title).Caption("Название");
+                                c.AddFor(o => o.Description).Caption("Описание");
+                                c.AddFor(o => o.Price).Caption("Цена");
+                                c.AddFor(o => o.GroupId).Lookup(l =>
+                                l.DataSource(d => d.Mvc().Controller("ProductGroups")
+                                .Key("Id")
+                                .LoadAction("Get")
+                                .LoadParams(new { organizationId = Model.ToString() })
+                                ).DisplayExpr("Title").ValueExpr("Id")).CustomizeText(
+                    @<text> function(e) { if(!e.value){
+                        return "Нет группы"
+                        } else {
+                        return e.value
+                        }
+                        }
+                    </text>
+                    ).Caption("Группа");
+                            })
+                                                    .Editing(e =>
+                                                    {
+                                                        e.Mode(GridEditMode.Form);
+                                                        e.AllowAdding(true).AllowUpdating(true);
+                                                    })
+                                                    .ShowBorders(true)
+                                                    .OnRowInserting(@<text> function(e) { e.data.OrganizationId = "@Model.ToString()"; } </text>)
                 )
             </div>
         </div>
@@ -111,6 +142,11 @@
 <script>
     function onInitNewRow(e, parentID) {
     e.data.GroupId = parentID;
+    }
+
+    function fileUploader_valueChanged(e) {
+        var key = e.element.attr('id');
+        e.component.option('uploadUrl', '/FileUploader/Upload?key=' + key);
     }
 </script>
 

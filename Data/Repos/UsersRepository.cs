@@ -16,9 +16,14 @@ namespace Data.Repos
             this.db = new BasicContext();
         }
 
-        public Guid checkUser(string email, string pass)
+        public string checkUser(string email, string pass)
         {
-            return db.Clients.FirstOrDefault(x => x.Email == email && x.Pass == pass).Id;
+            var client = db.Clients.FirstOrDefault(x => x.Email == email && x.Pass == pass);
+            if(client != null)
+            {
+                return client.Id.ToString();
+            }
+            return null;
         }
 
         public Guid addUser(Clients user)

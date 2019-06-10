@@ -56,6 +56,7 @@ namespace qr.Controllers
             db.SaveChanges();
         }
 
+        [Authorize]
         public ActionResult Products(string id)
         {
             return View(new Guid(id));

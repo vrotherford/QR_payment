@@ -56,7 +56,7 @@ namespace qr.Controllers
             db.SaveChanges();
         }
 
-        // GET: ProductGroups
+        [Authorize]
         public ActionResult Index()
         {
             return View();

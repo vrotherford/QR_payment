@@ -30,17 +30,25 @@ namespace qr.Controllers
             var id = userRepository.checkUser(client.Email, client.Pass);
             if (id != null)
             {
-                FormsAuthentication.SetAuthCookie(id.ToString(), true);
+                FormsAuthentication.SetAuthCookie(id, true);
                 return Redirect(ReturnUrl);
             }
             return View();
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public ActionResult SignUp(Clients client)
         {
             UsersRepository userRepository = new UsersRepository();
-            userRepository.addUser(client);
+            var id = userRepository.checkUser(client.Email, client.Pass);
+            if (id == null)
+            {
+                userRepository.addUser(client);
+                FormsAuthentication.SetAuthCookie(client.Id.ToString(), true);
+                return Redirect("/");
+            }
+            
             return View();
         }
     }

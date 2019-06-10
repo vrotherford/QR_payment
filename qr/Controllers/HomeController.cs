@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace qr.Controllers {
     public class HomeController : Controller {
+        [Authorize]
         public ActionResult Index() {
             return View();
         }

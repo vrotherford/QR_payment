@@ -1,0 +1,52 @@
+﻿@using Core
+@model Products
+@{
+    ViewBag.Title = "Product";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title – приложение ASP.NET</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    @Styles.Render("~/Content/bundle")
+    @Scripts.Render("~/Scripts/bundle")
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/Scripts/DevExtremeBundle")
+</head>
+<body>
+    <div class="card mb-3" style="max-width: 540px;">
+        <div class="row no-gutters">
+            <div class="col-md-4">
+                <img src="@Model.Photo" class="card-img" alt="...">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">@Model.Title</h5>
+                    <p class="card-text">@Model.Description</p>
+                    <p class="card-text" style="text-align: right"><strong>Цена: @Model.Price</strong></p>
+                </div>
+                <button id="PayButton" type="button" class="btn btn-success btn-lg" data-amount="@Model.Price" style="width: 100%" onclick="pay()">Купить</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function pay() {
+            $.ajax({
+                url: "@Url.Action("SendPayment", "Payment")",
+                type: "POST",
+                data: { "amount": $("#PayButton").attr("data-amount"), "merchant_id":"1396424" },
+                success: function () {
+                    alert("Zaebis");
+                },
+            });
+        }
+    </script>
+</body>
+</html>
