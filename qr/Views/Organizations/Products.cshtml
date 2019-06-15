@@ -22,47 +22,95 @@
             </div>
             <div class="card-body">
                 @(Html.DevExtreme().DataGrid<Core.ProductGroups>()
-                                        .DataSource(d => d.Mvc().Controller("ProductGroups")
-                                        .Key(new string[] { "Id" })
-                                        .LoadAction("Get")
-                                        .UpdateAction("Update")
-                                        .InsertAction("Insert")
-                                        .DeleteAction("Delete")
-                                        .LoadParams(new { organizationId = Model.ToString() })
-                                        ).Columns(c =>
-                                        {
-                                            c.AddFor(o => o.Title).Caption("Название");
-                                            c.AddFor(o => o.Description).Caption("Описание");
-                                            c.AddFor(o => o.OrganizationId).Visible(false);
-                                        })
-                                        .Editing(e => e.AllowAdding(true).AllowUpdating(true))
-                                        .OnRowInserting(@<text> function(e) { e.data.OrganizationId = "@Model.ToString()"; } </text>)
-                                    .MasterDetail(md =>
+                                            .DataSource(d => d.Mvc().Controller("ProductGroups")
+                                            .Key(new string[] { "Id" })
+                                            .LoadAction("Get")
+                                            .UpdateAction("Update")
+                                            .InsertAction("Insert")
+                                            .DeleteAction("Delete")
+                                            .LoadParams(new { organizationId = Model.ToString() })
+                                            ).Columns(c =>
+                                            {
+                                                c.AddFor(o => o.Title).Caption("Название");
+                                                c.AddFor(o => o.Description).Caption("Описание");
+                                                c.AddFor(o => o.OrganizationId).Visible(false);
+                                                c.AddFor(o => o.Photo).AllowSorting(false).AllowGrouping(false).Caption("Фотография")
+                                                .CellTemplate(@<text>
+                                                    <div>
+                                                        <img src="<%= value %>" alt="" style="height: 100px; display: block;" />
+                                                    </div>
+                                                </text>)
+                                                .EditCellTemplate(
+                                                @<text>
+                                                    @(Html.DevExtreme().FileUploader()
+                                                        .ID("file-uploader")
+                                                        .ElementAttr(new JS("{'data-id': data.id }"))
+                                                        .Name("myFile")
+                                                        .Multiple(false)
+                                                        .Accept("*")
+                                                        .UploadMode(FileUploadMode.Instantly)
+                                                        .UploadUrl(Url.Action("Upload", "FileUploader"))
+                                                        .OnValueChanged("fileUploader_valueChanged")
+                                                    )
+                                                </text>
+                   );
+                            })
+                            .Editing(e => e.AllowAdding(true)
+                            .AllowUpdating(true)
+                            .AllowDeleting(true)
+                            .Mode(GridEditMode.Popup)
+                            .Popup(p =>
+                            {
+                                p.Title("Edit");
+                                p.ShowTitle(true);
+                                p.Width(700);
+                                p.Height(525);
+                                p.Position(pos => pos
+                                    .My(HorizontalAlignment.Center, VerticalAlignment.Top)
+                                    .At(HorizontalAlignment.Center, VerticalAlignment.Top)
+                                    .Of(new JS("window"))
+                                );
+                            })
+                            .Form(f =>
+                            {
+                                f.Items(i =>
+                                {
+                                    i.AddGroup().ColCount(2).ColSpan(2).Items(gi =>
                                     {
-                                        md.Enabled(true);
-                                        md.Template(
-                                        @<text>
-                                            @(Html.DevExtreme().DataGrid<Core.Products>()
-                                                        .DataSource(d => d.Mvc().Controller("Products")
-                                                        .Key(new string[] { "id", "GroupId" })
-                                                        .LoadAction("GetForGroup")
-                                                        .UpdateAction("Update")
-                                                        .InsertAction("Insert")
-                                                        .DeleteAction("Delete")
-                                                        .LoadParams(new { GroupId = new JS("data.Id") })
-                                                        ).Columns(c =>
-                                                        {
-                                                            c.AddFor(o => o.Title).Caption("Название");
-                                                            c.AddFor(o => o.Description).Caption("Описание");
-                                                            c.AddFor(o => o.Price).Caption("Цена");
-                                                            c.AddFor(o => o.OrganizationId).Visible(false);
-                                                        })
-                                                        .Editing(e => e.AllowAdding(true).AllowUpdating(true))
-                                                        .OnInitNewRow(string.Format("function(e) {{ onInitNewRow(e, {0}); }}", new JS("data.Id")))
-                                            )
-                                        </text>
-                                    );
-                                })
+                                        gi.AddSimpleFor(m => m.Title);
+                                        gi.AddSimpleFor(m => m.Description);
+                                        gi.AddSimpleFor(m => m.Photo);
+                                    });
+                                });
+                            })
+                                )
+                                .OnRowInserting(@<text> function(e) { e.data.OrganizationId = "@Model.ToString()"; } </text>)
+                        .MasterDetail(md =>
+                        {
+                            md.Enabled(true);
+                            md.Template(
+                            @<text>
+                                @(Html.DevExtreme().DataGrid<Core.Products>()
+                                                    .DataSource(d => d.Mvc().Controller("Products")
+                                                    .Key(new string[] { "id", "GroupId" })
+                                                    .LoadAction("GetForGroup")
+                                                    .UpdateAction("Update")
+                                                    .InsertAction("Insert")
+                                                    .DeleteAction("Delete")
+                                                    .LoadParams(new { GroupId = new JS("data.Id") })
+                                                    ).Columns(c =>
+                                                    {
+                                                        c.AddFor(o => o.Title).Caption("Название");
+                                                        c.AddFor(o => o.Description).Caption("Описание");
+                                                        c.AddFor(o => o.Price).Caption("Цена");
+                                                        c.AddFor(o => o.OrganizationId).Visible(false);
+                                                    })
+                                                    .Editing(e => e.AllowAdding(true).AllowUpdating(true).AllowDeleting(true))
+                                                    .OnInitNewRow(string.Format("function(e) {{ onInitNewRow(e, {0}); }}", new JS("data.Id")))
+                                )
+                            </text>
+                    );
+                    })
 
                 )
             </div>
@@ -78,34 +126,66 @@
             </div>
             <div class="card-body">
                 @(Html.DevExtreme().DataGrid<Core.Products>()
-                            .DataSource(d => d.Mvc().Controller("Products")
-                            .Key(new string[] { "id", "OrganizationId" })
-                            .LoadAction("Get")
-                            .UpdateAction("Update")
-                            .InsertAction("Insert")
-                            .DeleteAction("Delete")
-                            .LoadParams(new { organizationId = Model.ToString() })
-                            ).Columns(c =>
-                            {
-                                c.AddFor(o => o.Photo).AllowSorting(false).AllowGrouping(false).Caption("Фотография")
-                                .CellTemplate(@<text>
-                                    <div>
-                                        <img src="<%= value %>" alt="" style="height: 100px; display: block;"/>
-                                    </div>
-                                </text>)
-                            .EditCellTemplate(
-                            @<text>
-                                @(Html.DevExtreme().FileUploader()
-                                                    .ID("file-uploader")
-                                                    .ElementAttr(new JS("{'data-id': data.id }"))
-                                                    .Name("myFile")
-                                                    .Multiple(false)
-                                                    .Accept("*")
-                                                    .UploadMode(FileUploadMode.Instantly)
-                                                    .UploadUrl(Url.Action("Upload", "FileUploader"))
-                                                    .OnValueChanged("fileUploader_valueChanged")
-                                )
-                            </text>
+                                    .DataSource(d => d.Mvc().Controller("Products")
+                                    .Key(new string[] { "id", "OrganizationId" })
+                                    .LoadAction("Get")
+                                    .UpdateAction("Update")
+                                    .InsertAction("Insert")
+                                    .DeleteAction("Delete")
+                                    .LoadParams(new { organizationId = Model.ToString() })
+                                    )
+                                    .Editing(e =>
+                                            {
+                                                e.Mode(GridEditMode.Popup);
+                                                e.AllowAdding(true).AllowUpdating(true).AllowDeleting(true);
+                                                e.Popup(p =>
+                                                {
+                                                    p.Title("Edit");
+                                                    p.ShowTitle(true);
+                                                    p.Width(700);
+                                                    p.Height(525);
+                                                    p.Position(pos => pos
+                                                        .My(HorizontalAlignment.Center, VerticalAlignment.Top)
+                                                        .At(HorizontalAlignment.Center, VerticalAlignment.Top)
+                                                        .Of(new JS("window"))
+                                                    );
+                                                });
+                                                e.Form(f =>
+                                                {
+                                                    f.Items(i =>
+                                                    {
+                                                        i.AddGroup().ColCount(2).ColSpan(2).Items(gi =>
+                                                        {
+                                                            gi.AddSimpleFor(m => m.Title);
+                                                            gi.AddSimpleFor(m => m.Description);
+                                                            gi.AddSimpleFor(m => m.Price);
+                                                            gi.AddSimpleFor(m => m.GroupId);
+                                                            gi.AddSimpleFor(m => m.Photo);
+                                                        });
+                                                    });
+                                                });
+                                            })
+                                    .Columns(c =>
+                                    {
+                                        c.AddFor(o => o.Photo).AllowSorting(false).AllowGrouping(false).Caption("Фотография")
+                                        .CellTemplate(@<text>
+                                            <div>
+                                                <img src="<%= value %>" alt="" style="height: 100px; display: block;" />
+                                            </div>
+                                        </text>)
+                                .EditCellTemplate(
+                                @<text>
+                                    @(Html.DevExtreme().FileUploader()
+                                                                .ID("file-uploader")
+                                                                .ElementAttr(new JS("{'data-id': data.id }"))
+                                                                .Name("myFile")
+                                                                .Multiple(false)
+                                                                .Accept("*")
+                                                                .UploadMode(FileUploadMode.Instantly)
+                                                                .UploadUrl(Url.Action("Upload", "FileUploader"))
+                                                                .OnValueChanged("fileUploader_valueChanged")
+                                    )
+                                </text>
                             );
 
                                 c.AddFor(o => o.Title).Caption("Название");
@@ -124,15 +204,17 @@
                         }
                         }
                     </text>
-                    ).Caption("Группа");
-                            })
-                                                    .Editing(e =>
-                                                    {
-                                                        e.Mode(GridEditMode.Form);
-                                                        e.AllowAdding(true).AllowUpdating(true);
-                                                    })
-                                                    .ShowBorders(true)
-                                                    .OnRowInserting(@<text> function(e) { e.data.OrganizationId = "@Model.ToString()"; } </text>)
+            ).Caption("Группа");
+                                c.AddFor(o => o.QRCode).AllowSorting(false).AllowGrouping(false).Caption("QR-Код")
+                                    .CellTemplate(@<text>
+                                <div>
+                                    <img src="<%= value %>" alt="" style="height: 100px; display: block;" />
+                                </div>
+                            </text>);
+                                    })
+                                            
+                                            .ShowBorders(true)
+                                            .OnRowInserting(@<text> function(e) { e.data.OrganizationId = "@Model.ToString()"; } </text>)
                 )
             </div>
         </div>

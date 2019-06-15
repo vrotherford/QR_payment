@@ -18,6 +18,7 @@ namespace Services
         public static string sendPaymentRequstAsync(string amount, string merchant_id, string url)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+            amount += "00";
             string order_id = String.Format("test_{0}", Guid.NewGuid().ToString());
             string signature = generateSignature(amount, merchant_id, "test payment", order_id);
             var values = new Dictionary<string, string>

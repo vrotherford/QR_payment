@@ -28,8 +28,11 @@ namespace qr.Controllers
 
         public ActionResult Insert(string values)
         {
+            var filePath = Session["currentFilePath"].ToString();
+            Session["currentFilePath"] = "";
             var newProductGroup = new ProductGroups();                             // Create a new item
             JsonConvert.PopulateObject(values, newProductGroup);           // Populate the item with the values
+            newProductGroup.Photo = filePath;
             if (!TryValidateModel(newProductGroup))                        // Validate the item
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Error");
             db.productGroups.Add(newProductGroup);                            // Add the item to the database
@@ -40,7 +43,10 @@ namespace qr.Controllers
         // Update an item in the "Orders" collection
         public ActionResult Update(Guid key, string values)
         {
+            var filePath = Session["currentFilePath"].ToString();
+            Session["currentFilePath"] = "";
             var productGroup = db.productGroups.First(o => o.Id == key); // Find the item to be updated by key
+            productGroup.Photo = filePath;
             JsonConvert.PopulateObject(values, productGroup);              // Populate the found item with the changed values
             if (!TryValidateModel(productGroup))                           // Validate the updated item
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Error");

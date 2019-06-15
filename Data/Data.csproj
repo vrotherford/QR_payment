@@ -50,6 +50,9 @@
   <ItemGroup>
     <Compile Include="BasicContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repos\OrganizationsRepository.cs" />
+    <Compile Include="Repos\ProductGroupsRepository.cs" />
+    <Compile Include="Repos\ProductsRepository.cs" />
     <Compile Include="Repos\UsersRepository.cs" />
   </ItemGroup>
   <ItemGroup>

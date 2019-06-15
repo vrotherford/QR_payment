@@ -42,8 +42,8 @@
                 url: "@Url.Action("SendPayment", "Payment")",
                 type: "POST",
                 data: { "amount": $("#PayButton").attr("data-amount"), "merchant_id":"1396424" },
-                success: function () {
-                    
+                success: function (data) {
+                    window.location.replace(data);
                 },
             });
         }

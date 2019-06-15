@@ -8,7 +8,7 @@
         <EntityTypeShape EntityType="QRModel.Clients" Width="1.5" PointX="0.75" PointY="1.5" IsExpanded="true" />
         <EntityTypeShape EntityType="QRModel.Organizations" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
         <EntityTypeShape EntityType="QRModel.ProductGroups" Width="1.5" PointX="5.25" PointY="1.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="QRModel.Products" Width="1.5" PointX="7.5" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="QRModel.Products" Width="1.5" PointX="7.625" PointY="1.125" IsExpanded="true" />
         <AssociationConnector Association="QRModel.FK__Organizat__UserI__3C69FB99" ManuallyRouted="false" />
         <AssociationConnector Association="QRModel.FK__ProductGr__Organ__403A8C7D" ManuallyRouted="false" />
         <AssociationConnector Association="QRModel.FK__Products__Organi__44FF419A" ManuallyRouted="false" />
