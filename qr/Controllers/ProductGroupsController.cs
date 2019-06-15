@@ -1,8 +1,10 @@
 ﻿using Core;
 using Data;
+using Data.Repos;
 using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
+using Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +18,7 @@ namespace qr.Controllers
     {
 
         private BasicContext db = new BasicContext();
+        private ProductsRepository productsRepository = new ProductsRepository();
         // GET: Organizations
         public ActionResult Get(DataSourceLoadOptions loadOptions)
         {
@@ -36,6 +39,12 @@ namespace qr.Controllers
             if (!TryValidateModel(newProductGroup))                        // Validate the item
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Error");
             db.productGroups.Add(newProductGroup);                            // Add the item to the database
+            db.SaveChanges();
+            newProductGroup.QRCode = QRGenerator.Generate(Url.Action("ProductList",
+                "ProductGroups",
+                new { id = newProductGroup.Id.ToString() }, Request.Url.Scheme),
+                Server.MapPath("~/Content/Files/"),
+                newProductGroup.Id.ToString());
             db.SaveChanges();
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
@@ -66,6 +75,13 @@ namespace qr.Controllers
         public ActionResult Index()
         {
             return View();
+        }
+
+        [AllowAnonymous]
+        public ActionResult ProductList(string id)
+        {
+            var model = productsRepository.GetByProductGroup(new Guid(id));
+            return View(model);
         }
     }
 }

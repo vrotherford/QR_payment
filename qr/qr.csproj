@@ -265,6 +265,7 @@
     <Content Include="Views\Login\_Register.cshtml" />
     <Content Include="Views\Payment\PaymentForm.cshtml" />
     <Content Include="Views\About\Index.cshtml" />
+    <Content Include="Views\ProductGroups\ProductList.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -370,7 +371,6 @@
   <ItemGroup>
     <Folder Include="Content\Files\" />
     <Folder Include="Views\FileUploader\" />
-    <Folder Include="Views\ProductGroups\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
